@@ -23,6 +23,8 @@ const productSlice = createSlice({
     reducers: {
         resetState: (state) => {
             state.products = []
+            state.status = "idle"
+            state.error = null
         }
     },
     extraReducers: (builder) => {

@@ -1,18 +1,14 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api"
+import Image from "next/image";
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "@/lib/redux/slices/productSlice"
-import Image from "next/image"
 
-const Product = () => {
+const Edit = () => {
     const dispatch = useDispatch()
     const product = useSelector(state => state.products)
-
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-    })
 
     const fetchProducts = async () => {
         await dispatch(getProducts())
@@ -22,24 +18,21 @@ const Product = () => {
         fetchProducts()
     }, [])
 
-    const Map = () => {
-        const center = useMemo(() => ({ lat: parseFloat(product.products?.company?.address.latitude), lng: parseFloat(product.products?.company?.address.longitude) }), [])
-        if (!isLoaded) return <div>Loading...</div>
-        return (
-            <GoogleMap
-                zoom={14}
-                center={center}
-                mapContainerClassName="w-full h-[12.5rem]">
-                <MarkerF key={center.lat} title={product.products?.company?.name}
-                    position={center} />
-            </GoogleMap>
-        )
-    }
+    const {
+        register,
+        formState: { errors },
+        handleSubmit,
+        watch,
+        control,
+        setValue,
+    } = useForm();
 
     const sanitizeText = (text) => {
         const sanitizedText = text?.replace(/(<([^>]+)>)|console\.log\([^\)]*\);/ig, '')
         return sanitizedText
     }
+
+    const productDesc = watch("productDesc");
 
     return (
         <div className="flex flex-col gap-y-5 w-full">
@@ -65,12 +58,32 @@ const Product = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-5">
-                        <h1 className="leading-6 font-semibold text-[#374151] pb-2.5">{product.products?.name}</h1>
-                        <p className="text-sm leading-6 text-[#6B7280]">{sanitizeText(product.products?.description)}</p>
-                    </div>
+                    <form className="p-5 flex flex-col gap-2.5">
+                        <input
+                            {...register("productName", {
+                                required: true,
+                                pattern:
+                                    /^(?=.*[a-zA-ZçÇşŞğĞüÜıİöÖ])[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+(?:-[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+)*(?:\s[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+(?:-[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+)*)*$/,
+                            })}
+                            defaultValue={product.products?.name}
+                            className="leading-6 font-semibold text-[#374151] px-2.5 py-1.5 w-full border border-[#E5E7EB] rounded-md"
+                        />
+                        <div className="relative">
+                            <textarea
+                                {...register("productDesc", {
+                                    required: true,
+                                    maxLength: 1000,
+                                    pattern:
+                                        /^(?=.*[a-zA-ZçÇşŞğĞüÜıİöÖ])[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+(?:-[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+)*(?:\s[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+(?:-[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+)*)*$/,
+                                })}
+                                defaultValue={sanitizeText(product.products?.description)}
+                                className="leading-6 text-sm text-[#6B7280] px-2.5 pt-16 w-full border border-[#E5E7EB] rounded-md min-h-[22rem] resize-y overflow-hidden"
+                            />
+                            <span className="absolute right-1.5 top-10 text-[#6B7280] text-[10px] leading-3">{productDesc?.length || 0}/1000</span>
+                        </div>
+                    </form>
                 </div>
-                <div className="p-5 flex flex-col w-full gap-y-2.5 border-l border-[#E5E7EB]">
+                <div className="p-5 flex flex-col min-w-max gap-y-2.5 border-l border-[#E5E7EB]">
                     <span className="leading-6 font-semibold text-[#374151]">Offered By</span>
                     <Image
                         src={product.products?.company?.logo}
@@ -98,13 +111,23 @@ const Product = () => {
                             <span>{product.products?.company?.address.zipCode + " " + product.products?.company?.address.city.name + ", " + product.products?.company?.address.country.name}</span>
                         </div>
                     </div>
-                    <Map />
                 </div>
             </div>
             <div className="flex flex-col bg-white rounded-md border border-[#E5E7EB] w-full p-5">
                 <h3 className="pb-5 font-semibold">Video</h3>
-                <div className="flex justify-center">
-                    <iframe width="715" height="400" src={`https://www.youtube.com/embed/dQw4w9WgXcQ?si=WPubvH_osZOIINz_`} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <div>
+                    <form>
+                        <input
+                            {...register("productVideo", {
+                                required: true,
+                                pattern:
+                                    /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/|vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]+\/videos\/|album\/\d+\/video\/|video\/|))([^\s&]+)/,
+                            })}
+                            defaultValue={product.products?.video}
+                            placeholder="Add a youtube or vimeo link"
+                            className="leading-6 font-semibold text-[#374151] px-2.5 py-1.5 w-full border border-[#E5E7EB] rounded-md"
+                        />
+                    </form>
                 </div>
             </div>
             <div className="flex flex-col bg-white rounded-md border border-[#E5E7EB] w-full p-5">
@@ -160,4 +183,4 @@ const Product = () => {
     )
 }
 
-export default Product
+export default Edit
