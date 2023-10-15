@@ -27,7 +27,7 @@ const Header = () => {
                     <div className="flex justify-between items-center">
                         <div className="relative mr-[27.875rem]">
                             <input type="text" placeholder="Enter interests, keyword, company name, etc." className={`placeholder:text-[#374151] py-1.5 px-2.5 h-7 w-[31.25rem] rounded ${!configuration.configuration?.hasUserSection && "mr-32"}`} />
-                            <Image src="./inno_search.svg" alt="Search" width={16} height={16} className="absolute top-1.5 right-3.5" />
+                            <Image src="./inno_search.svg" alt="Search" width={16} height={16} className={`absolute top-1.5 right-3.5 ${!configuration.configuration?.hasUserSection && "absolute top-1.5 right-36"}`} />
                         </div>
                     </div>
                     <div className="flex items-center space-x-5">
