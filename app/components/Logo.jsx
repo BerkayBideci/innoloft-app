@@ -1,10 +1,10 @@
 import Image from "next/image"
 import Link from "next/link"
 
-const Logo = () => {
+const Logo = ({ image }) => {
     return (
         <Link href="/">
-            <Image src="/Logo.svg" alt="Innoloft Logo" width={140} height={27} />
+            <Image src={image} alt="Logo" className="object-fill max-h-7 max-w-36" width={144} height={28} />
         </Link>
     )
 }
