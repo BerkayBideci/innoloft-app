@@ -3,13 +3,13 @@ import Link from "next/link"
 
 const Menu = () => {
     return (
-        <div className="flex flex-col min-w-[17.5rem]">
+        <div className="hidden 2xl:flex flex-col min-w-[17.5rem]">
             <div className="flex items-center gap-x-4">
                 <Image
                     src="/profile-image.png"
                     width={70}
                     height={70}
-                    alt="profile-image"
+                    alt="Profile image"
                     className="rounded-full"
                 />
                 <div className="flex flex-col">
@@ -18,15 +18,15 @@ const Menu = () => {
                 </div>
             </div>
             <Link href="/" className="flex items-center my-3 mx-2 gap-x-3">
-                <Image src="./inno_home.svg" width={16} height={16} />
+                <Image src="./inno_home.svg" width={16} height={16} alt="Home icon" />
                 <span>Home</span>
             </Link>
             <Link href="/" className="flex items-center my-3 mx-2 gap-x-3">
-                <Image src="./inno_group.svg" width={16} height={16} />
+                <Image src="./inno_group.svg" width={16} height={16} alt="Members icon" />
                 <span>Members</span>
             </Link>
             <Link href="/" className="flex items-center my-3 mx-2 gap-x-3">
-                <Image src="./inno_organizations.svg" width={16} height={16} />
+                <Image src="./inno_organizations.svg" width={16} height={16} alt="Organizations icon" />
                 <span>Organizations</span>
                 <svg width="16" height="16" className="ms-auto" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="inno_accordion-down-light" clipPath="url(#clip0_16302_1335)">

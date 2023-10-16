@@ -41,10 +41,16 @@ const Product = () => {
         return sanitizedText
     }
 
+    function extractYouTubeSrc(url) {
+        const regex = /https:\/\/www\.youtube\.com\/watch\?v=([^&]+)/;
+        const match = url?.match(regex);
+        return match ? match[1] : "";
+    }
+
     return (
         <div className="flex flex-col gap-y-5 w-full">
-            <div className="flex bg-white rounded-md border border-[#E5E7EB]">
-                <div className="max-w-[46.625rem]">
+            <div className="flex flex-col xl:flex-row bg-white rounded-md border border-[#E5E7EB]">
+                <div className="xl:max-w-[46.625rem]">
                     <div className="max-h-[18.75rem] overflow-hidden relative">
                         <Image
                             src={product.products?.picture}
@@ -52,7 +58,7 @@ const Product = () => {
                             width={746}
                             height={300}
                             className="object-contain" />
-                        <div className="absolute top-0 left-0 flex items-center h-[2.5rem] gap-x-2.5 border-b border-r border-[#E5E7EB] rounded-tl-md rounded-br-md">
+                        <div className="absolute top-0 left-0 flex items-center h-[2.5rem] gap-x-2.5 border-b border-r border-[#E5E7EB] rounded-tl-md rounded-br-md bg-white">
                             <div className="bg-[#272E71] p-3 rounded-tl-md rounded-br-md">
                                 <Image
                                     src="/inno_dev-4.svg"
@@ -92,7 +98,7 @@ const Product = () => {
                         </div>
                     </div>
                     <div className="flex items-start gap-x-1.5 mt-2.5">
-                        <Image src="/inno_location.svg" width={16} height={16} />
+                        <Image src="/inno_location.svg" width={16} height={16} alt="Location icon" />
                         <div className="flex flex-col text-sm text-[#6B7280]">
                             <span>{product.products?.company?.address.street + " " + product.products?.company?.address.house + ","}</span>
                             <span>{product.products?.company?.address.zipCode + " " + product.products?.company?.address.city.name + ", " + product.products?.company?.address.country.name}</span>
@@ -103,19 +109,26 @@ const Product = () => {
             </div>
             <div className="flex flex-col bg-white rounded-md border border-[#E5E7EB] w-full p-5">
                 <h3 className="pb-5 font-semibold">Video</h3>
-                <div className="flex justify-center">
-                    <iframe width="715" height="400" src={`https://www.youtube.com/embed/dQw4w9WgXcQ?si=WPubvH_osZOIINz_`} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <div className="relative pt-[56.25%]">
+                    <iframe
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full"
+                        src={`https://www.youtube.com/embed/${extractYouTubeSrc(product.products?.video)}`}
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                    >
+                    </iframe>
                 </div>
             </div>
             <div className="flex flex-col bg-white rounded-md border border-[#E5E7EB] w-full p-5">
                 <h3 className="pb-5 font-semibold">Offer details</h3>
-                <div className="grid grid-cols-2 gap-x-10 gap-y-5 text-[#6B7280]">
+                <div className="grid xl:grid-cols-2 gap-x-10 gap-y-5 text-[#6B7280]">
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_dev-4.svg" width={24} height={24} />
+                            <Image src="/inno_dev-4.svg" width={24} height={24} alt="Technology icon" />
                             <div className="flex flex-col gap-y-2.5">
                                 <span>Technology</span>
-                                <div className="flex gap-x-1.5">
+                                <div className="flex flex-col sm:flex-row gap-x-1.5 gap-y-1.5">
                                     {product.products?.categories?.map((category) => (
                                         <span key={category.id} className="bg-[#E5E7EB] text-sm py-1.5 px-3.5 rounded-[1.25rem]">{category.name}</span>
                                     ))}
@@ -125,10 +138,10 @@ const Product = () => {
                     </div>
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_strategy.svg" width={24} height={24} />
+                            <Image src="/inno_strategy.svg" width={24} height={24} alt="Business model icon" />
                             <div className="flex flex-col gap-y-2.5">
                                 <span>Business Model</span>
-                                <div className="flex gap-x-1.5">
+                                <div className="flex flex-col sm:flex-row gap-x-1.5 gap-y-1.5">
                                     {product.products?.businessModels?.map((model) => (
                                         <span key={model.id} className="bg-[#E5E7EB] text-sm py-1.5 px-3.5 rounded-[1.25rem]">{model.name}</span>
                                     ))}
@@ -138,16 +151,16 @@ const Product = () => {
                     </div>
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_clock.svg" width={24} height={24} />
+                            <Image src="/inno_clock.svg" width={24} height={24} alt="TRL icon" />
                             <div className="flex flex-col gap-2.5">
                                 <span>TRL</span>
-                                <span className="bg-[#E5E7EB] text-sm py-1.5 px-3.5 rounded-[1.25rem]">{product.products?.trl?.name?.replace(/\(.*?\)/g, '').trim()}</span>
+                                <span className="bg-[#E5E7EB] text-sm py-1.5 px-3.5 rounded-[1.25rem] max-w-[9rem] sm:max-w-full">{product.products?.trl?.name?.replace(/\(.*?\)/g, '').trim()}</span>
                             </div>
                         </div>
                     </div>
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_investor.svg" width={24} height={24} />
+                            <Image src="/inno_investor.svg" width={24} height={24} alt="Costs icon" />
                             <div className="flex flex-col gap-2.5">
                                 <span>Costs</span>
                                 <span className="bg-[#E5E7EB] text-sm py-1.5 px-3.5 rounded-[1.25rem]">{product.products?.investmentEffort?.replace("€", " €")}</span>

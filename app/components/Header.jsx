@@ -23,7 +23,7 @@ const Header = () => {
         <header style={{ backgroundColor: configuration.configuration?.mainColor }}>
             <div className="container mx-auto py-3.5 px-10 flex justify-between items-center">
                 <Logo image={configuration.configuration?.id === 1 ? "/Logo.svg" : configuration.configuration?.logo} />
-                <div className="flex justify-between items-center">
+                <div className="hidden 2xl:flex justify-between items-center">
                     <div className="flex justify-between items-center">
                         <div className="relative mr-[27.875rem]">
                             <input type="text" placeholder="Enter interests, keyword, company name, etc." className={`placeholder:text-[#374151] py-1.5 px-2.5 h-7 w-[31.25rem] rounded ${!configuration.configuration?.hasUserSection && "mr-32"}`} />
@@ -45,8 +45,8 @@ const Header = () => {
                         <div className={`flex items-center space-x-2 ${!configuration.configuration?.hasUserSection && "hidden"}`}>
                             <Button>
                                 <div className="relative">
-                                    <Image src="./Border-Profile-Pic.svg" width={26} height={26} />
-                                    <Image src="/profile-image.png" width={25} height={25} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full" />
+                                    <Image src="./Border-Profile-Pic.svg" width={26} height={26} alt="Profile image border" />
+                                    <Image src="/profile-image.png" width={25} height={25} alt="Profile image" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full" />
                                 </div>
                                 <Image src="./inno_accordion-down-light.svg" alt="Language" width={16} height={16} />
                             </Button>

@@ -1,29 +1,34 @@
 "use client"
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts, getTrl, updateProductDetails, updateProductVideo, updateProductOfferDetails } from "@/lib/redux/slices/productSlice"
+import { Editor } from "@tinymce/tinymce-react";
 import Button from "@/app/components/Button";
 
 const Edit = () => {
     const dispatch = useDispatch()
     const product = useSelector(state => state.products)
     const trl = useSelector(state => state.products.trl)
+    const editorRef = useRef(null);
 
     const onProductDetailsSubmit = async (data) => {
         const { productName, productDesc } = data
+        console.log(productName, productDesc)
         await dispatch(updateProductDetails(productName, productDesc))
     }
 
     const onProductVideoSubmit = async (data) => {
         const { productVideo } = data
+        console.log(productVideo)
         await dispatch(updateProductVideo(productVideo))
     }
 
     const onProductOfferDetailsSubmit = async (data) => {
         const { productTech, productBusiness, productTrl, productCosts } = data
+        console.log(productTech, productBusiness, productTrl, productCosts)
         await dispatch(updateProductOfferDetails(productTech, productBusiness, productTrl, productCosts))
     }
 
@@ -43,8 +48,8 @@ const Edit = () => {
     const {
         register: register1,
         handleSubmit: handleSubmit1,
-        watch: watch1,
         setValue: setValue1,
+        control: control1,
     } = useForm();
 
     const {
@@ -64,20 +69,18 @@ const Edit = () => {
         return sanitizedText
     }
 
-    const productDesc = watch1("productDesc");
-
     return (
         <div className="flex flex-col gap-y-5 w-full">
-            <div className="flex bg-white rounded-md border border-[#E5E7EB]">
-                <div className="max-w-[46.625rem]">
+            <div className="flex flex-col xl:flex-row bg-white rounded-md border border-[#E5E7EB]">
+                <div className="xl:max-w-[46.625rem]">
                     <div className="max-h-[18.75rem] overflow-hidden relative">
                         <Image
                             src={product.products?.picture}
-                            alt="product"
+                            alt="Product image"
                             width={746}
                             height={300}
                             className="object-contain" />
-                        <div className="absolute top-0 left-0 flex items-center h-[2.5rem] gap-x-2.5 border-b border-r border-[#E5E7EB] rounded-tl-md rounded-br-md">
+                        <div className="absolute top-0 left-0 flex items-center h-[2.5rem] gap-x-2.5 border-b border-r border-[#E5E7EB] rounded-tl-md rounded-br-md bg-white">
                             <div className="bg-[#272E71] p-3 rounded-tl-md rounded-br-md">
                                 <Image
                                     src="/inno_dev-4.svg"
@@ -111,19 +114,54 @@ const Edit = () => {
                             defaultValue={product.products?.name}
                             className="leading-6 font-semibold text-[#374151] px-2.5 py-1.5 w-full border border-[#E5E7EB] rounded-md"
                         />
-                        <div className="relative">
-                            <textarea
-                                {...register1("productDesc", {
-                                    required: true,
-                                    maxLength: 1000,
-                                    pattern:
-                                        /^(?=.*[a-zA-ZçÇşŞğĞüÜıİöÖ])[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+(?:-[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+)*(?:\s[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+(?:-[a-zA-ZçÇşŞğĞüÜıİöÖ\d\W]+)*)*$/,
-                                })}
-                                defaultValue={sanitizeText(product.products?.description)}
-                                className="leading-6 text-sm text-[#6B7280] px-2.5 pt-16 w-full border border-[#E5E7EB] rounded-md min-h-[22rem] resize-y overflow-hidden"
-                            />
-                            <span className="absolute right-1.5 top-10 text-[#6B7280] text-[10px] leading-3">{productDesc?.length || 0}/1000</span>
-                        </div>
+                        <Controller
+                            name="productDesc"
+                            control={control1}
+                            rules={{
+                                required: 'Content is required',
+                                validate: value => value.length <= 1000 || 'Content exceeds 1000 characters limit'
+                            }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <Editor
+                                    apiKey={process.env.NEXT_PUBLIC_TINY_API_KEY}
+                                    value={value}
+                                    onEditorChange={onChange}
+                                    onBlur={onBlur}
+                                    onInit={(evt, editor) => (editorRef.current = editor)}
+                                    initialValue={sanitizeText(product.products?.description)}
+                                    init={{
+                                        height: 400,
+                                        menubar: false,
+                                        plugins: [
+                                            "advlist",
+                                            "autolink",
+                                            "lists",
+                                            "link",
+                                            "image",
+                                            "charmap",
+                                            "preview",
+                                            "anchor",
+                                            "searchreplace",
+                                            "visualblocks",
+                                            "code",
+                                            "fullscreen",
+                                            "insertdatetime",
+                                            "media",
+                                            "table",
+                                            "code",
+                                            "help",
+                                            "wordcount",
+                                        ],
+                                        toolbar:
+                                            "undo redo | blocks | " +
+                                            "bold italic forecolor | alignleft aligncenter " +
+                                            "alignright alignjustify | bullist numlist outdent indent | " +
+                                            "removeformat | help",
+                                        content_style:
+                                            "body { font-family:Open Sans,Arial,sans-serif; line-height:1.5rem; font-size:0.875rem; color: #6B7280; }",
+                                    }}
+                                />)}
+                        />
                         <div className="flex justify-end w-full gap-2.5">
                             <Button
                                 buttonOnClick={() => {
@@ -149,7 +187,7 @@ const Edit = () => {
                     <span className="leading-6 font-semibold text-[#374151]">Offered By</span>
                     <Image
                         src={product.products?.company?.logo}
-                        alt="product"
+                        alt="Product company logo"
                         width={200}
                         height={36}
                     />
@@ -158,7 +196,7 @@ const Edit = () => {
                             src={product.products?.user?.profilePicture}
                             width={60}
                             height={60}
-                            alt="profile-image"
+                            alt="Profile image"
                             className="rounded-full"
                         />
                         <div className="flex flex-col">
@@ -167,7 +205,7 @@ const Edit = () => {
                         </div>
                     </div>
                     <div className="flex items-start gap-x-1.5 mt-2.5">
-                        <Image src="/inno_location.svg" width={16} height={16} />
+                        <Image src="/inno_location.svg" width={16} height={16} alt="Location icon" />
                         <div className="flex flex-col text-sm text-[#6B7280]">
                             <span>{product.products?.company?.address.street + " " + product.products?.company?.address.house + ","}</span>
                             <span>{product.products?.company?.address.zipCode + " " + product.products?.company?.address.city.name + ", " + product.products?.company?.address.country.name}</span>
@@ -201,7 +239,7 @@ const Edit = () => {
                                 buttonStyle="text-sm text-[#6B7280]">
                             </Button>
                             <Button buttonType="submit" desc="Save" buttonStyle="text-sm text-white bg-[#272E71] py-1.5 px-2.5 rounded-md">
-                                <Image src="/Chevron_right.svg" alt="Save icon" width={16} height={16} />
+                                <Image src="/Chevron_right.svg" alt="Right arrow icon" width={16} height={16} />
                             </Button>
                         </div>
                     </form>
@@ -211,10 +249,10 @@ const Edit = () => {
                 <h3 className="pb-5 font-semibold">Offer details</h3>
                 <form
                     onSubmit={handleSubmit3(onProductOfferDetailsSubmit)}
-                    className="grid grid-cols-2 gap-x-10 gap-y-5 text-[#6B7280]">
+                    className="grid xl:grid-cols-2 gap-x-10 gap-y-5 text-[#6B7280]">
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_dev-4.svg" width={24} height={24} />
+                            <Image src="/inno_dev-4.svg" width={24} height={24} alt="Technology icon" />
                             <div className="flex flex-col gap-y-2.5 w-full">
                                 <span>Technology</span>
                                 <input
@@ -233,7 +271,7 @@ const Edit = () => {
                     </div>
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_strategy.svg" width={24} height={24} />
+                            <Image src="/inno_strategy.svg" width={24} height={24} alt="Business model icon" />
                             <div className="flex flex-col gap-y-2.5 w-full">
                                 <span>Business Model</span>
                                 <input
@@ -252,7 +290,7 @@ const Edit = () => {
                     </div>
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_clock.svg" width={24} height={24} />
+                            <Image src="/inno_clock.svg" width={24} height={24} alt="TRL icon" />
                             <div className="flex flex-col gap-2.5 w-full">
                                 <span>TRL</span>
                                 <select {...register3("productTrl", {
@@ -270,7 +308,7 @@ const Edit = () => {
                     </div>
                     <div>
                         <div className="flex items-start gap-x-1.5">
-                            <Image src="/inno_investor.svg" width={24} height={24} />
+                            <Image src="/inno_investor.svg" width={24} height={24} alt="Costs icon" />
                             <div className="flex flex-col gap-2.5 w-full">
                                 <span>Costs</span>
                                 <input
@@ -304,7 +342,7 @@ const Edit = () => {
                                 buttonType="submit"
                                 desc="Save"
                                 buttonStyle="text-sm text-white bg-[#272E71] py-1.5 px-2.5 rounded-md">
-                                <Image src="/Chevron_right.svg" alt="Save icon" width={16} height={16} />
+                                <Image src="/Chevron_right.svg" alt="Right arrow icon" width={16} height={16} />
                             </Button>
                         </div>
                     </div>
